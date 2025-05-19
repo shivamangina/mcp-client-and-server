@@ -8,10 +8,14 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Dict, Optional, Any, List
+from typing import Dict, Optional, Any
 
 import requests
 from requests.exceptions import RequestException
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class ResearchAssistant:
     """A class to interact with Perplexity Sonar API for research."""
