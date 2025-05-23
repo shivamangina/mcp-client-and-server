@@ -73,3 +73,12 @@ The first time you run the server:
 4. After authentication, credentials will be saved in `token.pickle` for future use
 
 Note: During development, you can proceed with the unverified app warning. For production use, you'll need to complete Google's verification process.
+
+```
+Python executable: /Users/satya/.cache/uv/archive-v0/pGuE2AxGBjPiS8blW44tW/bin/python
+
+this you can find in logs and use it to install modules like below. Until a proper fix is made this is the temp fix.
+
+uv pip install --python /Users/satya/.cache/uv/archive-v0/pGuE2AxGBjPiS8blW44tW/bin/python google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+
+```

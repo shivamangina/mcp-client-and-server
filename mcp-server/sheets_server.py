@@ -73,7 +73,33 @@ def get_google_sheets_service():
     print("Google Sheets service initialized successfully.", file=sys.stderr)
     return build('sheets', 'v4', credentials=creds)
 
-@mcp.tool()
+@mcp.tool(name="create_sheet")
+def create_sheet(title: str) -> dict:
+    """
+    Create a new Google Sheet.
+    
+    Args:
+        title: The title of the new spreadsheet
+    
+    Returns:
+        dict: The response from the Google Sheets API containing the new spreadsheet details
+    """
+    print(f"Creating new sheet with title: {title}", file=sys.stderr)
+    try:
+        service = get_google_sheets_service()
+        spreadsheet = {
+            'properties': {
+                'title': title
+            }
+        }
+        spreadsheet = service.spreadsheets().create(body=spreadsheet).execute()
+        print(f"Sheet created successfully with ID: {spreadsheet.get('spreadsheetId')}", file=sys.stderr)
+        return spreadsheet
+    except Exception as e:
+        print(f"Error creating sheet: {str(e)}", file=sys.stderr)
+        return {"error": str(e)}
+
+@mcp.tool(name="add_to_sheet")
 def add_to_sheet(spreadsheet_id: str, range_name: str, values: list) -> dict:
     """
     Add data to a Google Sheet.
@@ -104,32 +130,9 @@ def add_to_sheet(spreadsheet_id: str, range_name: str, values: list) -> dict:
         print(f"Error adding data: {str(e)}", file=sys.stderr)
         return {"error": str(e)}
 
-@mcp.tool()
-def create_sheet(title: str) -> dict:
-    """
-    Create a new Google Sheet.
-    
-    Args:
-        title: The title of the new spreadsheet
-    
-    Returns:
-        dict: The response from the Google Sheets API containing the new spreadsheet details
-    """
-    print(f"Creating new sheet with title: {title}", file=sys.stderr)
-    try:
-        service = get_google_sheets_service()
-        spreadsheet = {
-            'properties': {
-                'title': title
-            }
-        }
-        spreadsheet = service.spreadsheets().create(body=spreadsheet).execute()
-        print(f"Sheet created successfully with ID: {spreadsheet.get('spreadsheetId')}", file=sys.stderr)
-        return spreadsheet
-    except Exception as e:
-        print(f"Error creating sheet: {str(e)}", file=sys.stderr)
-        return {"error": str(e)}
-
 if __name__ == "__main__":
-    print("Starting MCP server...", file=sys.stderr)
-    mcp.run() 
+    port = os.environ.get("FASTMCP_PORT", "8000")
+    print(f"Starting MCP server on port {port}...", file=sys.stderr)
+    print("Available tools: create_sheet, add_to_sheet", file=sys.stderr)
+    print("Server is ready to accept connections.", file=sys.stderr)
+    mcp.run(transport='streamable-http') 
