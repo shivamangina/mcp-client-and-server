@@ -49,3 +49,6 @@ next-env.d.ts
 # langgraph
 .langgraph_api
 node_modules
+
+*credentials.json
+*token.pickle

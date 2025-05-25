@@ -48,6 +48,11 @@ DEFAULT_MCP_CONFIG: MCPConfig = {
         "args": [os.path.join(os.path.dirname(__file__), "..", "sheets_server.py")],
         "transport": "stdio",
     },
+    "youtube": {
+        "command": "python",
+        "args": [os.path.join(os.path.dirname(__file__), "..", "youtube_server.py")],
+        "transport": "stdio",
+    }
 }
 
 async def chat_node(state: AgentState, config: RunnableConfig) -> Command[Literal["__end__"]]:
