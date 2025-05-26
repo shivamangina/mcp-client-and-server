@@ -1,8 +1,11 @@
 import sys
 import os
-import requests
 import dotenv
 import tempfile
+
+from elevenlabs.client import ElevenLabs # Import ElevenLabs client
+from elevenlabs import VoiceSettings # Import VoiceSettings (optional, for more control)
+# from elevenlabs import play # Play is for testing, not needed in server tool
 
 dotenv.load_dotenv() # Load environment variables from .env file
 
@@ -18,6 +21,23 @@ print("Starting Text Audio Server...", file=sys.stderr)
 # Create an MCP server
 mcp = FastMCP("Text Audio Server")
 
+# Initialize the ElevenLabs client globally or within the tool if preferred
+elevenlabs_api_key = os.environ.get("ELEVENLABS_API_KEY")
+
+# Initialize client outside the tool to avoid re-initialization on every call
+elevenlabs_client = None
+if elevenlabs_api_key:
+    try:
+        elevenlabs_client = ElevenLabs(
+            api_key=elevenlabs_api_key,
+        )
+        print("Eleven Labs client initialized successfully.", file=sys.stderr)
+    except Exception as e:
+         print(f"Error initializing Eleven Labs client: {str(e)}", file=sys.stderr)
+else:
+    print("Warning: ELEVENLABS_API_KEY not set. Eleven Labs tool will not work.", file=sys.stderr)
+
+
 @mcp.tool()
 def generate_audio(text: str) -> dict:
     """
@@ -31,41 +51,34 @@ def generate_audio(text: str) -> dict:
     """
     print(f"Generating audio for text: {text[:50]}...", file=sys.stderr) # Print first 50 chars of text
 
-    elevenlabs_api_key = os.environ.get("ELEVENLABS_API_KEY")
-    if not elevenlabs_api_key:
-        return {"error": "ELEVENLABS_API_KEY environment variable not set."}
+    if not elevenlabs_client:
+         return {"error": "Eleven Labs client not initialized. ELEVENLABS_API_KEY might be missing or invalid."}
 
-    # --- Eleven Labs API Configuration ---
-    # You may need to adjust the voice_id and model_id based on your Eleven Labs account and desired voice.
-    voice_id = "pNInz6obpgDQGcFmaJgB" # Example: Rachel voice ID - replace with your desired voice ID
-    model_id = "eleven_monolingual_v1" # Example model ID - replace if you use a different model
-    api_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-
-    headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": elevenlabs_api_key
-    }
-
-    data = {
-        "text": text,
-        "model_id": model_id,
-        "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.5
-        }
-    }
-
+    # --- Eleven Labs API Configuration --- (using the official library)
     try:
-        response = requests.post(api_url, headers=headers, json=data)
-        response.raise_for_status() # Raise an exception for bad status codes
+        # Calling the text_to_speech conversion API with detailed parameters
+        # Using parameters from the user's example
+        audio_stream = elevenlabs_client.text_to_speech.convert(
+            text=text,
+            voice_id="JBFqnCBsd6RMkjVDRZzb", # Voice ID from user's example
+            model_id="eleven_multilingual_v2", # Model ID from user's example
+            output_format="mp3_44100_128", # Output format from user's example
+            # You can add voice_settings here for more control if needed:
+            # voice_settings=VoiceSettings(
+            #     stability=0.5,
+            #     similarity_boost=0.5
+            # ),
+        )
 
-        # Save the audio to a temporary file
+        # Save the audio stream to a temporary file
         # Use delete=False so the file persists after this function returns
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
         with open(temp_file.name, 'wb') as f:
-            f.write(response.content)
-        
+            # The convert method returns an iterator, write chunks to file
+            for chunk in audio_stream:
+                if chunk:
+                    f.write(chunk)
+
         audio_file_path = temp_file.name
         print(f"Audio generated successfully and saved to {audio_file_path}", file=sys.stderr)
 
@@ -80,15 +93,13 @@ def generate_audio(text: str) -> dict:
 
         return {"audio_file_path": audio_file_path}
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error calling Eleven Labs API: {str(e)}", file=sys.stderr)
-        return {"error": f"Eleven Labs API error: {str(e)}"}
     except Exception as e:
-        print(f"An unexpected error occurred: {str(e)}", file=sys.stderr)
-        return {"error": f"An unexpected error occurred: {str(e)}"}
+        print(f"Error generating audio with Eleven Labs library: {str(e)}", file=sys.stderr)
+        # Catch specific ElevenLabs library exceptions for more detail if needed
+        return {"error": f"Eleven Labs audio generation error: {str(e)}"}
 
 if __name__ == "__main__":
     print("Starting MCP server...", file=sys.stderr)
     # Ensure you have the necessary libraries installed:
-    # uv pip install --system fastmcp requests python-dotenv
+    # uv pip install --system fastmcp python-dotenv elevenlabs
     mcp.run() 
