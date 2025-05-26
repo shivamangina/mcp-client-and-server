@@ -73,3 +73,13 @@ The first time you run the server:
 4. After authentication, credentials will be saved in `token.pickle` for future use
 
 Note: During development, you can proceed with the unverified app warning. For production use, you'll need to complete Google's verification process.
+
+
+Script Writing: Script Writer (SW) (takes theme/criteria, uses research).
+Character/Actor Generation: Character/Actor Generation (AC) (creates custom actors).
+Storyboarding: Story Boarding (SB) (takes script, creates frame-by-frame details, uses VLM, provides feedback to DOP).
+Image Generation (DOP): DOP (takes feedback from SB and actor data, generates images for each frame).
+Audio Generation (Narrator): Narrator (takes text from SB, generates audio).
+Editing & Post-Production: Editing & Post-Production (takes frames from DOP and audio from Narrator, creates final video).
+Final Video: The output.
+YouTube Upload: The user's requirement, handled by the existing youtube_server.
