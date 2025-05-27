@@ -1,6 +1,7 @@
-# sonar-hackathon
+# mcp-client and server
 
-build a multi agent human in the loop to make youtube shorts.
+build a multi agent human in the loop to make youtube shorts. 
+using mcp servers and client
 
 ```
 uv init
