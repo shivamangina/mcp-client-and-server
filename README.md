@@ -9,6 +9,9 @@ uv run main.py -m sonar-pro -p system_prompt.md -k $PPLX_API_KEY -j "i want to r
 
 ```
 
+https://ai-sdk.dev/docs/introduction
+refer this https://github.com/kamath/chat
+
 <!--  -->
 
 These are the agents:
