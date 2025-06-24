@@ -3,39 +3,34 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import ChatHistory from "@/components/ChatHistory";
+import Chat from "@/components/Chat";
+import Tools from "@/components/Tools";
+import ToolsInvocations from "@/components/ToolsInvocations";
 
 export default function Home() {
   return (
     <ResizablePanelGroup direction="horizontal" className="h-screen">
-      <ResizablePanel className="h-screen" defaultSize={25}>
-        <div className="flex items-center justify-center p-6">
-          <span className="font-semibold">Chat History</span>
-        </div>
+      <ResizablePanel className="h-screen" defaultSize={20}>
+        <div className="text-3xl font-bold p-4">LOGO</div>
+        <ChatHistory />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel className="h-screen" defaultSize={50}>
-        <div className="flex items-center justify-center p-6">
-          <span className="font-semibold">chat</span>
-        </div>
+        <Chat />
       </ResizablePanel>
       <ResizableHandle />
-
       <ResizablePanel defaultSize={30}>
         <ResizablePanelGroup direction="vertical">
           <ResizablePanel defaultSize={25}>
-            <div className="flex h-full items-center justify-center p-6">
-              <span className="font-semibold">Available Tools</span>
-            </div>
+            <Tools />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={75}>
-            <div className="flex h-full items-center justify-center p-6">
-              <span className="font-semibold">Tool Invocations</span>
-            </div>
+            <ToolsInvocations />
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
-      
     </ResizablePanelGroup>
   );
 }
