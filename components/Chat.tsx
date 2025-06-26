@@ -1,8 +1,24 @@
 "use client";
 import React from "react";
 import { Textarea } from "./ui/textarea";
+import { generateText } from "ai"
+import { openai } from "@ai-sdk/openai"
+
 
 export default function Chat() {
+
+
+  
+  const handleSend = async () => {
+    const { text } = await generateText({
+      model: openai("o3-mini"),
+      prompt: "What is love?"
+    })
+    console.log(text)
+  }
+
+
+
   return (
     <div className="flex flex-col h-full  items-center justify-between p-6">
       <div className="flex flex-col">
@@ -29,7 +45,7 @@ export default function Chat() {
         </p>
         <button
           onClick={() => {
-            console.log("send");
+            handleSend()
           }}
           className="h-10 rounded-lg border border-gray-200 p-2 hover:bg-gray-200"
         >
